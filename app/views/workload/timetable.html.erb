@@ -1,13 +1,13 @@
-
-<A HREF="/timetable_summary">Overall view</A>
+<div align="center"><A HREF="/workload/summary"><%= l(:summary_all_label) %></A>
 <HR/>
-<FORM action="/taskjuggler/timetable">
+<FORM action="/workload/timetable">
 <%= l(:user_label) %> : <SELECT NAME="user_id">
 <%
 @users.each do |user|
 %>
 <OPTION VALUE="<%= user.id%>" <%
 if user.id == @current_user_id
+	@current_user_name = user.name
 %> SELECTED <%
 end
 %>><%=user.name%></OPTION>
@@ -18,6 +18,7 @@ end
 <%= l(:date_label) %> : <input type="text" name="date" value="<%= @current_date %>">
  <input type="submit" value="<%= l(:changeuseranddate_label) %>">
 </FORM>
+<BR/>
 <%
 date = Date::parse(@current_date)
 if date.wday == 1
@@ -31,11 +32,14 @@ else
 	previous_adjust = 0
 end
 %>
-<a href="/taskjuggler/timetable?user_id=<%=@current_user_id %>&date=<%= (date - 1 - previous_adjust ).to_s() %>"> <-- <%= l(:previous_day_label) %></a>
+<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (date - 1 - previous_adjust ).to_s() %>"> <-- <%= l(:previous_day_label) %></a>
 |
-<a href="/taskjuggler/timetable?user_id=<%=@current_user_id %>&date=<%= (date + 1 + follow_adjust).to_s() %>"><%= l(:following_day_label) %> --></a>
+<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (date + 1 + follow_adjust).to_s() %>"><%= l(:following_day_label) %> --></a>
+<BR>
+<A href="/workload/timetable_summary?user_id=<%= @current_user_id%>&date=<%= @current_date %>"><%= l(:consult_timetable_of_label) %> : <%=  @current_user_name %></a>
+</div>
 <HR/>
-<FORM ACTION="/taskjuggler/timetable_update">
+<FORM ACTION="/workload/timetable_update">
 <input type ="hidden" name="date" value="<%= @current_date %>"/>
 <input type ="hidden" name="user_id" value="<%= @current_user_id%>"/>
 <INPUT TYPE="SUBMIT" value="<%= l(:submitdailyworkload_label) %>"/> [ TOTAL : <%= @hours_total / 8 %> / 1 <%= l(:daystoday_label) %> ]

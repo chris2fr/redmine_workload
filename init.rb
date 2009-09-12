@@ -1,4 +1,5 @@
 require 'redmine'
+require 'workload_lib'
 
 Redmine::Plugin.register :redmine_workload do
   name 'Redmine Workload plugin'
