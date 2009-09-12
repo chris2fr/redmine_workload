@@ -113,7 +113,8 @@ class WorkloadController < ApplicationController
 		@assigned_issues = {}
 		issues = Issue.find(:all, :conditions => ["assigned_to_id = " + @current_user_id.to_s()], :order => ["project_id, category_id, id"] )
 		issues.each do |issue|
-			unless (@logged_issues and @logged_issues[issue.id])
+			unless (@logged_issues and @logged_issues[issue.id]) or (issue.start_date and issue.start_date > @current_date) or (issue.due_date and issue.due_date < @current_date) or
+			(issue.status.is_closed and (not issue.start_date or not issue.due_date))
 				#@time_entries_hours[issue.id] = get_spent_hours(issue.id, params[:user_id],params[:date])
 				@assigned_issues[issue.id] = issue
 			end
@@ -122,7 +123,10 @@ class WorkloadController < ApplicationController
 		watched = Watcher.find(:all, :conditions => {:user_id => @current_user_id, :watchable_type => "issue"})
 		@watched_issues = {}
 		watched.each do |watched_issue|
-			unless (@logged_issues and @logged_issues[watched_issue.watchable_id]) or (@assigned_issues and @assigned_issues[watched_issue.watchable_id])
+			issue = watched_issue.watchable
+			unless (@logged_issues and @logged_issues[watched_issue.watchable_id]) or (@assigned_issues and @assigned_issues[watched_issue.watchable_id]) or
+			(issue.start_date and issue.start_date > @current_date) or (issue.due_date and issue.due_date < @current_date) or
+			(issue.status.is_closed and (not issue.start_date or not issue.due_date))
 				@watched_issues[watched_issue.watchable_id] = Issue.find(:first, :conditions => {:id => watched_issue.watchable_id})
 			end
 		end
@@ -176,9 +180,16 @@ class WorkloadController < ApplicationController
 				@projcat[te.issue.project.id][cat_id][te.spent_on.to_s()] += te.hours.to_f() / 8
 				@projcat[te.issue.project.id][cat_id]["total"] += te.hours.to_f() / 8
 				unless @total_days.has_key?(te.spent_on.to_s())
-					@total_days[te.spent_on.to_s()] = 0.0
-				end	
-				@total_days[te.spent_on.to_s()] += te.hours.to_f() / 8
+					@total_days[te.spent_on.to_s()] = {}
+					@total_days[te.spent_on.to_s()]["total"] = 0.0
+				end
+				unless @total_days[te.spent_on.to_s()].has_key?(te.project.id)
+					@total_days[te.spent_on.to_s()][te.project.id] = 0.0
+				end
+				@total_days[te.spent_on.to_s()]["total"] += te.hours.to_f() / 8
+				@projcat[te.issue.project.id]["total"] += te.hours.to_f() / 8
+				####@projcat[te.issue.project.id][cat_id]["total"] += te.hours.to_f() / 8
+				@total_days[te.spent_on.to_s()][te.project.id] += te.hours.to_f() / 8
 			end
 		end
 

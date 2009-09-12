@@ -1,7 +1,7 @@
 <table border="1">
 <tr>
-<td>&nbsp;&nbsp;<B><%= User.current.login %></B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
+<td><B><%= date_debut %>&nbsp;-&nbsp;<%= date_fin %></B>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<TD>Total</TD>
 
 <%
 
@@ -17,10 +17,28 @@ end
 </TR>
 <%
 @projects.each do |projet|
- 	if @projcat.has_key?(projet.id) and @projcat[projet.id].has_key?("total")
+ 	if @projcat.has_key?(projet.id) and @projcat[projet.id].has_key?("total") and @projcat[projet.id]["total"].to_f() > 0.0
 	%>
 <TR>
-<td colspan="<%= (date_fin) - (date_debut) %>"><H3><%= projet.name %></H3></td>
+<td><H3><%= projet.name %></H3></td>
+<TD align="right"><B><%= @projcat[projet.id]["total"] %></B></TD>
+<%
+((date_debut)..(date_fin)).each do |idate|
+	if idate.wday != 0 and idate.wday != 6
+		idate = (idate).to_s()
+		%><TD align="right"><B><%
+		if  @total_days.has_key?(idate)
+			if @total_days[idate].has_key?(projet.id)
+				%><%= @total_days[idate][projet.id] %><%
+			else
+				%>0<%
+			end
+		else
+			%>0<%
+		end %></B></TD><%
+	end
+end
+%>
 </TR>
 <%
 	projet.issue_categories.each do |cat|
@@ -28,6 +46,7 @@ end
 			%>
 			<TR>
 			<td><H4><%= cat.name %></H4></td>
+			<TD align="right"><%= @projcat[projet.id][cat.id]["total"] %></TD>
 	<%
 			((date_debut)..(date_fin)).each do |idate|
 				if idate.wday != 0 and idate.wday != 6
@@ -40,19 +59,20 @@ end
 		%><TD <%
 				%>style="background-color:rgb(255, 255, <%= 255 - (255 * hours).to_i()  %>)"<%
 			%>
-		><%= hours %></TD>
+		align="right" ><%= hours %></TD>
 		<%
 				end # if idate.wday != 0 and idate.wday != 6
 			end # ((date_debut)..(date_fin)).each do |idate|
 		%>
-		<TD><%= @projcat[projet.id][cat.id]["total"]%></TD>
 		</TR>
 		<%
 		end
 	end # projet.issue_categories.each do |cat|
+	if @projcat[projet.id]["other"]["total"] > 0
 %>
 	<TR>
 	<TD><H4>Other</H4></TD>
+	<TD align="right"><%= @projcat[projet.id]["other"]["total"] %></TD>
 	<%
 	((date_debut)..(date_fin)).each do |idate|
 		if idate.wday != 0 and idate.wday != 6
@@ -62,17 +82,17 @@ end
 			else
 				hours = 0
 			end # if idate.wday != 0 and idate.wday != 6
-			%><TD <%
+			%><TD align="right" <%
 					%>style="background-color:rgb(255, 255, <%= 255 - (255 * hours).to_i()  %>)"<%
 				%>
 			><%= hours %></TD>
 			<%
 		end # if idate.wday != 0 and idate.wday != 6
 	end # ((date_debut)..(date_fin)).each do |idate|
-	%><TD><%= @projcat[projet.id]["other"]["total"]%></TD>
-	</TR>
+	%>
 	</TR>
 	<%
+end
 end
 %>
 <%

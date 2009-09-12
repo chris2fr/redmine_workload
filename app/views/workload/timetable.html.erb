@@ -20,11 +20,11 @@ end
 </FORM>
 <BR/>
 <%
-date = Date::parse(@current_date)
-if date.wday == 1
+@current_date = Date::parse(@current_date.to_s())
+if @current_date.wday == 1
 	follow_adjust = 0
 	previous_adjust = 2
-elsif date.wday == 5
+elsif @current_date.wday == 5
 	follow_adjust = 2
 	previous_adjust = 0
 else
@@ -32,9 +32,9 @@ else
 	previous_adjust = 0
 end
 %>
-<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (date - 1 - previous_adjust ).to_s() %>"> <-- <%= l(:previous_day_label) %></a>
+<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (@current_date - 1 - previous_adjust ).to_s() %>"> <-- <%= l(:previous_day_label) %></a>
 |
-<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (date + 1 + follow_adjust).to_s() %>"><%= l(:following_day_label) %> --></a>
+<a href="/workload/timetable?user_id=<%=@current_user_id %>&date=<%= (@current_date + 1 + follow_adjust).to_s() %>"><%= l(:following_day_label) %> --></a>
 <BR>
 <A href="/workload/timetable_summary?user_id=<%= @current_user_id%>&date=<%= @current_date %>"><%= l(:consult_timetable_of_label) %> : <%=  @current_user_name %></a>
 </div>
