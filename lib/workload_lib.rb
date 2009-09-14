@@ -48,7 +48,6 @@
 				end
 				if te.spent_on
 					@logged_days[te.issue_id][te.spent_on.to_s()] = te.hours.to_f() / 8
-					####### @projcat[te.project_id][te.project.category_id][te.spent_on.to_s()] = te.hours.to_f() / 8
 					@projcat = add_to_projcat(@projcat, te.issue.project, te.issue.category, te) 
 					unless @total_days.has_key?(te.spent_on.to_s())
 						@total_days[te.spent_on.to_s()] = te.hours.to_f() / 8

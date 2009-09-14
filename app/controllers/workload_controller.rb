@@ -6,6 +6,7 @@ class WorkloadController < ApplicationController
 	def timetable_summary
 		@current_date = get_current_date (params)
 		@current_user_id = get_current_user_id (params)
+		@current_user = User.find(@current_user_id)
 		@interval = 30
 		#@return = get_timetable_info(@date, @interval, @current_user_id)
 		get_timetable_info(@current_date, @interval, @current_user_id)
@@ -15,6 +16,7 @@ class WorkloadController < ApplicationController
 	def timetable_update
 		@current_date = get_current_date (params)
 		@current_user_id = get_current_user_id (params)
+		@current_user = User.find(@current_user_id)
 		#
 		# UPDATE PART
 		#
@@ -56,6 +58,7 @@ class WorkloadController < ApplicationController
 	def timetable
 		@current_date = get_current_date (params)
 		@current_user_id = get_current_user_id (params)
+		@current_user = User.find(@current_user_id)
 
 		@users = User.find(:all,:order => ['firstname'])
 		projects = Project.find(:all, :conditions => {:status => 1}, :order => ['parent_id,name'])
