@@ -50,6 +50,7 @@ end
 <td valign="top">
 
 <H2><%= l(:loggedissuestoday_label) %></H2>
+<DL>
 <% 
 if @logged_issues
 @logged_issues.each do |issue_id,issue|
@@ -61,7 +62,9 @@ if @logged_issues
 end
 end
 %>
+</DL>
 <H2><%= l(:assignedissues_label) %></H2>
+<DL>
 <% @assigned_issues.each do |issue_id,issue|
 	%>
 <%= 
@@ -70,9 +73,11 @@ end
 	<%
 end
 %>
+</DL>
 </td>
 <td valign="top">
 <H2><%= l(:watchedissues_label) %></H2>
+<DL>
 <% @watched_issues.each do |issue_id,issue|
 	%>
 <%= 
@@ -80,6 +85,7 @@ end
 	<%
 end
 %>
+</DL>
 </td>
 </tr>
 </table>
