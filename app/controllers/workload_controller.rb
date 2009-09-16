@@ -35,7 +35,7 @@ class WorkloadController < ApplicationController
 				te.issue_id = issue_id.to_i()
 				te.user_id = params[:user_id]
 				te.spent_on = params[:date]
-				params[:time_entires_comments][issue_id.to_s()].to_s()
+				te.comments = params[:time_entires_comments][issue_id.to_s()]
 				issue = Issue.find(issue_id)
 				issue.estimated_hours = (params[:issues_estimates][issue_id.to_s()].to_f() * 8.0).to_i()
 				issue.save()
