@@ -27,23 +27,33 @@ class WorkloadController < ApplicationController
 			@spent_hours = get_spent_hours(issue_id,params[:user_id].to_i(),params[:date])
 			# Non-zero time entry to add
 			if (@spent_hours == 0.0 and hours != "0")  # Ajouter TimeEntry
-				@te = TimeEntry.create()
-				@te.hours = hours.to_i()
-				@te.activity_id = act_id
-				issue = Issue.find(:first,:conditions => {:id => issue_id})
-				@te.project_id = issue.project_id
-				@te.issue_id = issue_id.to_i()
-				@te.user_id = params[:user_id]
-				@te.spent_on = params[:date]
-				@te.save()
+				te = TimeEntry.create()
+				te.hours = hours.to_i()
+				te.activity_id = act_id
+				issue = Issue.find(issue_id)
+				te.project_id = issue.project_id
+				te.issue_id = issue_id.to_i()
+				te.user_id = params[:user_id]
+				te.spent_on = params[:date]
+				params[:time_entires_comments][issue_id.to_s()].to_s()
+				issue = Issue.find(issue_id)
+				issue.estimated_hours = (params[:issues_estimates][issue_id.to_s()].to_f() * 8.0).to_i()
+				issue.save()
+				te.save()
 			# Non-zero time-entry to delete
 			elsif @spent_hours != 0 and hours == "0"#  and hours == "0" # Supprimer
 				TimeEntry.delete(TimeEntry.find(:first, :conditions => {:user_id => params[:user_id].to_i(),:issue_id => issue_id, :spent_on => params[:date]}).id)
 			# Non-zero time-entry to update
-			elsif @spent_hours != hours.to_f()
-				@te = TimeEntry.find(:first, :conditions => {:user_id => params[:user_id].to_i(),:issue_id => issue_id, :spent_on => params[:date]})
-				@te.hours = hours
-				@te.save()
+			elsif @spent_hours != 0 #hours.to_f()
+				te = TimeEntry.find(:first, :conditions => {:user_id => params[:user_id].to_i(),:issue_id => issue_id.to_i(), :spent_on => params[:date]})
+				if te
+					te.hours = hours
+					te.comments = params[:time_entires_comments][issue_id.to_s()].to_s()
+					issue = Issue.find(issue_id)
+					issue.estimated_hours = (params[:issues_estimates][issue_id.to_s()].to_f() * 8.0).to_i()
+					issue.save()
+					te.save()
+				end
 			end
 		end
 		#
@@ -84,6 +94,7 @@ class WorkloadController < ApplicationController
 		#projet
 		@hours_total = 0
 		@time_entries_hours = {}
+		@time_entries_comments = {}
 		# Time-logged issues
 		@logged_issues = {}
 		time_entries = TimeEntry.find(:all,:conditions => {:user_id => @current_user_id, :spent_on => @current_date})
@@ -109,6 +120,9 @@ class WorkloadController < ApplicationController
 						@logged_issues[time_entry.issue_id] = Issue.find(:first,:conditions => {:id => time_entry.issue_id})
 						@time_entries_hours[time_entry.issue_id] = get_spent_hours(time_entry.issue_id, @current_user_id,@current_date)
 						@hours_total += time_entry.hours
+						if @time_entries_hours[time_entry.issue_id] > 0
+							@time_entries_comments[time_entry.issue_id] = time_entry.comments
+						end
 					end
 			end
 		end

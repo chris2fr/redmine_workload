@@ -1,4 +1,5 @@
 <H2><%= l(:update_label) %></H2>
+
 <a href="/workload/timetable?user_id=<%= params[:user_id] %>&issue_id=<%= params[:issue_id] %>&date=<%= params[:date] %>"> <%= l(:back_label) %> </a>
 <H2 align="center"><%= l(:present_label) %></h2>
 <%= render :file  => File.join(File.dirname(__FILE__), 'inc_timetable_table.html.erb'), :locals => { :date_debut => @current_date - 9, :date_fin => @current_date + 9 } %>

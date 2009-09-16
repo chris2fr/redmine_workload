@@ -44,5 +44,6 @@
 				%> SELECTED <%
 			end
 		%>>7/8</OPTION>
-	</SELECT> [<%= @category_list[issue.category_id] %>]  <b><%= @project_list[issue.project_id] %></b> 
-	<a href="/issues/show/<%= issue.id%>">#<%= issue.id %></a>. "<%= issue.subject %>" (<%= @status_list[issue.status_id] %>) 
+	</SELECT> <%= issue.spent_hours.to_f() / 8.0 %> j booked / <INPUT NAME="issues_estimates[<%= issue.id%>]" TYPE="text" SIZE="2" VALUE="<%= issue.estimated_hours.to_f() / 8.0 %>"> j total (<%= (issue.estimated_hours.to_f() - issue.spent_hours.to_f()) / 8.0  %> non-programm&eacute;)[<%= @category_list[issue.category_id] %>]  <b><%= @project_list[issue.project_id] %></b> 
+	<a href="/issues/show/<%= issue.id%>">#<%= issue.id %></a>. "<%= issue.subject %>" (<%= @status_list[issue.status_id] %>) <BR/>
+	<INPUT TYPE="text" SIZE="100" NAME="time_entires_comments[<%= issue.id%>]" VALUE="<%= @time_entries_comments[issue.id] %>"/>
